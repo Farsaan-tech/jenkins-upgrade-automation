@@ -1,0 +1,5 @@
+- name: Back up Jenkins home before maintenance
+  hosts: jenkins
+  become: true
+  roles:
+    - jenkins_backup

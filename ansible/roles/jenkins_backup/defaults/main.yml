@@ -1,0 +1,2 @@
+jenkins_home: /var/lib/jenkins
+jenkins_backup_dir: /var/backups/jenkins

@@ -1,0 +1,5 @@
+- name: Upgrade Jenkins package and align Java runtime
+  hosts: jenkins
+  become: true
+  roles:
+    - jenkins_upgrade

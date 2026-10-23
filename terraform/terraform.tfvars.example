@@ -1,0 +1,7 @@
+aws_region               = "us-east-2"
+project_name             = "jenkins-upgrade-lab"
+instance_type            = "t3.small"
+admin_cidr               = "203.0.113.10/32" # REPLACE with your actual public IP/32
+public_key_path          = "C:/Users/YOUR_USER/.ssh/jenkins_upgrade_key.pub"
+ansible_private_key_path = "/home/ubuntu/.ssh/jenkins_upgrade_key"
+jenkins_http_port        = 8080

@@ -1,0 +1,37 @@
+- name: Install prerequisites
+  ansible.builtin.apt:
+    name: [ca-certificates, curl, fontconfig, openjdk-17-jre]
+    state: present
+    update_cache: true
+
+- name: Create keyrings directory
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+
+- name: Download Jenkins repository signing key
+  ansible.builtin.get_url:
+    url: https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
+    dest: /etc/apt/keyrings/jenkins-keyring.asc
+    mode: '0644'
+
+- name: Configure Jenkins stable repository
+  ansible.builtin.apt_repository:
+    repo: "deb [signed-by=/etc/apt/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/"
+    filename: jenkins
+    state: present
+    update_cache: true
+
+- name: Install requested Jenkins version
+  ansible.builtin.apt:
+    name: "jenkins={{ jenkins_version }}"
+    state: present
+    allow_downgrade: true
+  notify: Restart Jenkins
+
+- name: Ensure Jenkins is enabled and started
+  ansible.builtin.service:
+    name: jenkins
+    state: started
+    enabled: true

@@ -1,0 +1,5 @@
+- name: Verify Jenkins after installation or upgrade
+  hosts: jenkins
+  become: true
+  roles:
+    - jenkins_verify

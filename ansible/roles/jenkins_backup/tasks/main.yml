@@ -1,0 +1,30 @@
+- name: Ensure backup directory exists
+  ansible.builtin.file:
+    path: "{{ jenkins_backup_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0700'
+
+- name: Stop Jenkins for a consistent filesystem archive
+  ansible.builtin.service:
+    name: jenkins
+    state: stopped
+
+- name: Create timestamped Jenkins home archive
+  ansible.builtin.archive:
+    path: "{{ jenkins_home }}"
+    dest: "{{ jenkins_backup_dir }}/jenkins-home-{{ ansible_date_time.iso8601_basic_short }}.tar.gz"
+    format: gz
+    owner: root
+    mode: '0600'
+  register: jenkins_backup_archive
+
+- name: Start Jenkins after backup
+  ansible.builtin.service:
+    name: jenkins
+    state: started
+
+- name: Report backup archive location
+  ansible.builtin.debug:
+    msg: "Jenkins home archive created at {{ jenkins_backup_archive.dest }}"

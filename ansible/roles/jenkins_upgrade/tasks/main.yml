@@ -1,0 +1,34 @@
+- name: Refresh APT package metadata
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 0
+
+- name: Ensure supported Java runtime package is installed
+  ansible.builtin.apt:
+    name: "{{ jenkins_java_package }}"
+    state: present
+
+- name: Upgrade Jenkins to latest candidate in configured repository
+  ansible.builtin.apt:
+    name: jenkins
+    state: latest
+  register: jenkins_upgrade_result
+  notify: Restart Jenkins
+
+- name: Flush handlers before verification
+  ansible.builtin.meta: flush_handlers
+
+- name: Ensure Jenkins is running after upgrade
+  ansible.builtin.service:
+    name: jenkins
+    state: started
+    enabled: true
+
+- name: Read installed Jenkins package version
+  ansible.builtin.command: dpkg-query -W -f='${Version}' jenkins
+  register: installed_jenkins_version
+  changed_when: false
+
+- name: Display installed Jenkins package version
+  ansible.builtin.debug:
+    msg: "Installed Jenkins package version: {{ installed_jenkins_version.stdout }}"

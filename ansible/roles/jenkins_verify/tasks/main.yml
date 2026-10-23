@@ -1,0 +1,29 @@
+- name: Gather service facts
+  ansible.builtin.service_facts:
+
+- name: Assert Jenkins service is active
+  ansible.builtin.assert:
+    that:
+      - "ansible_facts.services['jenkins.service'].state == 'running'"
+    fail_msg: Jenkins systemd service is not running.
+    success_msg: Jenkins systemd service is running.
+
+- name: Read installed Jenkins package version
+  ansible.builtin.command: dpkg-query -W -f='${Version}' jenkins
+  register: jenkins_version_check
+  changed_when: false
+
+- name: Display version for maintenance record
+  ansible.builtin.debug:
+    msg: "Verified Jenkins package version {{ jenkins_version_check.stdout }}"
+
+- name: Check local Jenkins HTTP endpoint
+  ansible.builtin.uri:
+    url: "http://127.0.0.1:8080/login"
+    method: GET
+    status_code: [200, 403]
+    return_content: false
+  register: jenkins_http_check
+  retries: 12
+  delay: 10
+  until: jenkins_http_check.status in [200, 403]

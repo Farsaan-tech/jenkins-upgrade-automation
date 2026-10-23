@@ -1,0 +1,4 @@
+- import_playbook: install-pinned.yml
+- import_playbook: backup.yml
+- import_playbook: upgrade.yml
+- import_playbook: verify.yml
