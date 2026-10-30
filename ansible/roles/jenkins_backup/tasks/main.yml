@@ -12,7 +12,7 @@
     state: stopped
 
 - name: Create timestamped Jenkins home archive
-  ansible.builtin.archive:
+  community.general.archive:
     path: "{{ jenkins_home }}"
     dest: "{{ jenkins_backup_dir }}/jenkins-home-{{ ansible_date_time.iso8601_basic_short }}.tar.gz"
     format: gz
