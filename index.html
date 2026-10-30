@@ -1,20 +1,206 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Documentation for Jenkins version installation, backup, upgrade and verification automated with Terraform and Ansible on AWS.">
-<title>Jenkins Upgrade Automation · Project Docs</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Automated Jenkins installation, backup, upgrade and verification on AWS using Terraform and Ansible.">
+<title>Jenkins Upgrade Automation | DevOps Project</title>
 <style>
-:root{color-scheme:dark;--bg:#0d1117;--panel:#111820;--panel2:#161f29;--line:#283341;--text:#dbe4ee;--muted:#91a0b2;--link:#7db7ff;--green:#7ee0b5;--orange:#e8b879;--code:#090d12;--width:1160px}
-*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:24px}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.72 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}a{color:var(--link);text-decoration:none}a:hover{text-decoration:underline}.layout{display:grid;grid-template-columns:260px minmax(0,1fr);max-width:1440px;margin:auto}.sidebar{border-right:1px solid var(--line);padding:28px 20px;min-height:100vh;position:sticky;top:0;height:100vh;overflow:auto;background:#0b1016}.brand{font-weight:750;font-size:16px;letter-spacing:.01em}.eyebrow{color:var(--green);text-transform:uppercase;font-size:11px;letter-spacing:.13em;font-weight:700;margin:24px 0 8px}.nav a{display:block;color:var(--muted);padding:6px 10px;border-radius:6px;font-size:13px}.nav a:hover{background:var(--panel2);color:var(--text);text-decoration:none}.main{padding:48px clamp(22px,5vw,76px) 80px;max-width:1100px}.crumb{font-size:12px;color:var(--muted)}h1{font-size:clamp(32px,4vw,46px);line-height:1.16;letter-spacing:-.035em;margin:14px 0}h2{font-size:25px;letter-spacing:-.02em;margin:54px 0 14px;padding-bottom:10px;border-bottom:1px solid var(--line)}h3{font-size:17px;margin:28px 0 8px}p{color:#c3cedb}li{margin:5px 0;color:#c3cedb}.lead{font-size:17px;max-width:800px;color:#b8c6d6}.tags{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0}.tag{font-size:12px;border:1px solid var(--line);border-radius:5px;padding:4px 9px;color:#b9c7d8;background:var(--panel)}.callout{padding:15px 17px;border:1px solid #55472f;border-left:3px solid var(--orange);border-radius:7px;background:#17150f;margin:24px 0}.callout p{margin:5px 0}.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:22px 0}.card{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:16px}.card b{display:block;margin-bottom:4px}.muted{color:var(--muted);font-size:13px}pre{overflow:auto;background:var(--code);border:1px solid var(--line);padding:16px;border-radius:8px;color:#d5e2ef;font:13px/1.65 ui-monospace,SFMono-Regular,Consolas,monospace}code{font: .92em ui-monospace,SFMono-Regular,Consolas,monospace;background:#1a2430;padding:2px 5px;border-radius:4px}.diagram{border:1px solid var(--line);background:var(--panel);padding:20px;border-radius:10px;margin:22px 0}.flow{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center}.node{border:1px solid #344456;border-radius:8px;padding:14px;text-align:center;background:#121c26}.arrow{color:var(--green);font-size:22px}.screenshot{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:8px;margin:12px 0}.caption{font-size:12px;color:var(--muted);margin-top:-5px;margin-bottom:24px}table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13px}th,td{text-align:left;border-bottom:1px solid var(--line);padding:10px;vertical-align:top}th{color:#e5edf6;background:var(--panel)}.footer{border-top:1px solid var(--line);margin-top:64px;padding-top:20px;color:var(--muted);font-size:12px}.menu{display:none}
-@media(max-width:850px){.layout{display:block}.sidebar{position:relative;height:auto;min-height:0;border-right:0;border-bottom:1px solid var(--line);padding:16px 20px}.nav{display:flex;gap:5px;overflow-x:auto}.nav a{white-space:nowrap}.eyebrow{display:none}.main{padding-top:28px}.cards{grid-template-columns:1fr}.flow{grid-template-columns:1fr}.arrow{transform:rotate(90deg);text-align:center}}
-</style></head>
-<body><div class="layout"><aside class="sidebar"><div class="brand">Jenkins Upgrade Automation</div><div class="muted">Project documentation</div><div class="eyebrow">Guide</div><nav class="nav"><a href="#overview">Overview</a><a href="#architecture">Architecture</a><a href="#workflow">Workflow</a><a href="#setup">Setup</a><a href="#upgrade">Upgrade runbook</a><a href="#security">Security</a><a href="#evidence">Screenshots</a><a href="#resume">Resume summary</a><a href="#validation">Validation status</a></nav><div class="eyebrow">Repository</div><nav class="nav"><a href="README.md">README</a><a href="docs/architecture.md">Architecture details</a><a href="docs/runbook.md">Full runbook</a><a href="docs/patching-explained.md">Patching explained</a></nav></aside>
-<main class="main"><div class="crumb">Documentation / AWS / Configuration Management</div><h1>Jenkins upgrade automation</h1><p class="lead">Provision the maintenance environment with Terraform, install a defined Jenkins version, back up Jenkins home, upgrade the package through Ansible, and verify the service afterward.</p><div class="tags"><span class="tag">Terraform</span><span class="tag">AWS EC2</span><span class="tag">Ansible</span><span class="tag">Jenkins</span><span class="tag">Package patching</span></div>
-<div class="callout"><b>Lab safety note</b><p>The source material uses Jenkins 2.249.1 as a pinned baseline and includes a screenshot showing 2.490 after upgrading. The old baseline is for reproducing the exercise only. Do not expose an obsolete Jenkins instance to the public internet. Use a disposable AWS environment and validate version/Java compatibility before running.</p></div>
-<section id="overview"><h2>Overview</h2><p>This project automates a Jenkins maintenance scenario documented in the supplied eight-page PDF. Terraform creates two Ubuntu EC2 instances: an Ansible control node and a Jenkins target. Ansible installs a specific Jenkins package version, backs up the Jenkins home directory before maintenance, upgrades Jenkins and its Java runtime, then checks the resulting service.</p><div class="cards"><div class="card"><b>Infrastructure as Code</b><span class="muted">Reusable Terraform resources, variables, outputs, security groups and inventory generation.</span></div><div class="card"><b>Configuration management</b><span class="muted">Ansible playbooks and roles for baseline installation, backup, upgrade and verification.</span></div><div class="card"><b>Maintenance safety</b><span class="muted">Pre-upgrade backup, restricted network access and explicit validation steps.</span></div></div></section>
-<section id="architecture"><h2>Architecture</h2><div class="diagram"><div class="node"><b>Operator workstation</b><div class="muted">Terraform · AWS CLI · Git</div></div><div class="arrow" style="text-align:center">↓</div><div class="node"><b>Terraform</b><div class="muted">Creates EC2 instances, security groups and inventory outputs</div></div><div class="arrow" style="text-align:center">↓</div><div class="flow"><div class="node"><b>Ansible control node</b><div class="muted">SSH + playbooks</div></div><div class="arrow">⇄</div><div class="node"><b>Jenkins controller</b><div class="muted">Ubuntu · Java · Jenkins package</div></div></div><p class="muted">Inbound SSH and Jenkins UI access should be restricted to approved source ranges. The control node connects to the target over SSH.</p></div><p>See <a href="docs/architecture.md">the architecture notes</a> for resource and traffic details.</p></section>
-<section id="workflow"><h2>Workflow</h2><ol><li><b>Provision:</b> Terraform creates the two instances and outputs their addresses.</li><li><b>Connect:</b> Ansible uses an inventory and a dedicated SSH private key.</li><li><b>Pin:</b> Install the requested Jenkins version to establish the exercise baseline.</li><li><b>Back up:</b> Archive `/var/lib/jenkins` before making package changes.</li><li><b>Upgrade:</b> Refresh APT metadata, install the supported Java runtime and upgrade Jenkins from the configured stable repository.</li><li><b>Verify:</b> Check package version, systemd service status and HTTP endpoint.</li></ol><pre><code>terraform init
+:root{--bg:#0b1120;--panel:#111b2e;--panel2:#17243a;--line:#293951;--text:#e5edf8;--muted:#9aabc2;--accent:#38bdf8;--green:#34d399}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:24px}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.75 "Segoe UI",Arial,sans-serif}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline;color:#a5e2ff}
+.layout{display:grid;grid-template-columns:255px minmax(0,1fr);max-width:1500px;margin:auto}
+.sidebar{position:sticky;top:0;height:100vh;overflow:auto;padding:28px 20px;background:#0e192b;border-right:1px solid var(--line)}
+.brand{font-size:18px;font-weight:800;color:#fff}.brand span{color:var(--accent)}
+.brand-sub{font-size:12px;color:var(--muted);margin:4px 0 28px}
+.nav-label{margin:22px 0 8px;color:#71839d;font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase}
+.nav a{display:block;padding:7px 10px;border-radius:6px;color:#aebdd0;font-size:13px}
+.nav a:hover{background:var(--panel2);color:white;text-decoration:none}
+main{min-width:0;padding:46px clamp(22px,5vw,70px) 80px;max-width:1200px}
+.hero{padding:40px;border:1px solid var(--line);border-radius:14px;background:radial-gradient(circle at 90% 10%,#23466b 0,transparent 38%),linear-gradient(135deg,#172943,#101a2b)}
+.eyebrow,.section-number{color:var(--accent);font-size:11px;font-weight:800;letter-spacing:1.7px;text-transform:uppercase}
+h1{margin:13px 0;color:white;font-size:clamp(30px,4vw,44px);line-height:1.2;letter-spacing:-1px}
+.hero p{max-width:800px;color:#bdcadd;font-size:16px}
+.actions{display:flex;flex-wrap:wrap;gap:11px;margin-top:24px}
+.btn{display:inline-block;padding:10px 16px;border:1px solid #405875;border-radius:7px;color:white;font-size:13px;font-weight:700}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#071321}.btn:hover{text-decoration:none;transform:translateY(-1px)}
+.tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:23px}.tag{padding:5px 10px;border:1px solid #354c69;border-radius:5px;background:#14253b;color:#c6e5ff;font-size:11px;font-weight:700}
+section{margin-top:52px}.section-number{margin-bottom:4px}
+h2{margin:5px 0 12px;padding-bottom:10px;border-bottom:1px solid var(--line);color:white;font-size:25px}
+h3{margin:20px 0 8px;color:#eaf2ff;font-size:17px}
+p{margin:10px 0 15px;color:#bdcadd}.lead{max-width:850px;color:var(--muted)}
+ul,ol{padding-left:23px;color:#bdcadd}li{margin:7px 0;padding-left:4px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:18px}
+.grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.card{padding:19px;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+.card .kicker{margin-bottom:7px;color:var(--accent);font-size:10px;font-weight:800;letter-spacing:1px}
+.card h3{margin:0 0 7px}.card p{margin:0;color:var(--muted);font-size:13px}
+.flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:20px}
+.step{padding:17px;border:1px solid var(--line);border-radius:9px;background:var(--panel)}
+.step b{display:block;margin-bottom:7px;color:var(--accent);font-size:11px;letter-spacing:1px}
+.step h3{margin:0 0 6px;font-size:15px}.step p{margin:0;color:var(--muted);font-size:12px}
+.diagram{padding:20px;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+.node{padding:14px;border:1px solid #405875;border-radius:8px;background:#14243a;text-align:center}
+.node b{display:block;color:#f1f7ff}.node span{color:var(--muted);font-size:12px}
+.arrow{text-align:center;color:var(--green);font-size:21px;line-height:1.8}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+pre{overflow:auto;padding:17px;border:1px solid var(--line);border-radius:8px;background:#080e19;color:#c3dcf8;font:12px/1.8 Consolas,monospace}
+code{padding:2px 5px;border-radius:4px;background:#202c40;color:#8ed5ff;font: .92em Consolas,monospace}
+table{width:100%;border-collapse:collapse;margin:17px 0;font-size:13px}
+th,td{padding:11px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{background:var(--panel2);color:white}td{color:#bdcadd}
+.tree{padding:19px;border:1px solid var(--line);border-radius:9px;background:#080e19;color:#c9d7e7;font:13px/2 Consolas,monospace;overflow:auto}
+.tree .folder{color:var(--accent)}.tree .desc{color:#879bb5}
+.screenshot{margin:22px 0 30px;padding:18px;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+.screenshot h3{margin:0 0 5px}.screenshot img{display:block;width:100%;height:auto;margin-top:14px;border:1px solid #40516b;border-radius:6px;background:#fff}
+.caption{margin-top:8px;color:var(--muted);font-size:12px}
+.note{margin:18px 0;padding:15px 18px;border-left:3px solid var(--accent);border-radius:0 7px 7px 0;background:#14253a;color:#c7d8eb;font-size:13px}
+.footer{margin-top:65px;padding-top:22px;border-top:1px solid var(--line);color:#8495aa;font-size:12px}
+@media(max-width:900px){.layout{display:block}.sidebar{position:relative;height:auto;padding:20px}.nav{display:flex;flex-wrap:wrap;gap:3px}.nav a{white-space:nowrap}main{padding:28px 20px 60px}}
+@media(max-width:650px){.grid,.grid.three,.flow,.split{grid-template-columns:1fr}.hero{padding:25px 21px}h1{font-size:29px}h2{font-size:22px}table{display:block;overflow-x:auto}}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand">DevOps<span>Project</span></div>
+  <div class="brand-sub">Jenkins Upgrade Automation</div>
+  <nav class="nav">
+    <div class="nav-label">Project</div>
+    <a href="#overview">Overview</a><a href="#architecture">Architecture</a><a href="#workflow">Automation Workflow</a>
+    <div class="nav-label">Implementation</div>
+    <a href="#stack">Technology Stack</a><a href="#setup">Infrastructure Setup</a><a href="#upgrade">Upgrade Runbook</a><a href="#verification">Verification</a>
+    <div class="nav-label">Project Reference</div>
+    <a href="#repository">Repository Structure</a><a href="#screenshots">Project Screenshots</a><a href="#security">Security</a><a href="#troubleshooting">Troubleshooting</a>
+  </nav>
+</aside>
+
+<main>
+<header class="hero">
+  <div class="eyebrow">DevOps Engineering Project</div>
+  <h1>Jenkins Upgrade Automation<br>with Terraform &amp; Ansible</h1>
+  <p>Automated Jenkins infrastructure provisioning, version management, pre-upgrade backup, package upgrade and post-upgrade verification on AWS. Terraform provisions the environment while Ansible handles configuration and maintenance tasks.</p>
+  <div class="actions">
+    <a class="btn primary" href="https://github.com/Farsaan-tech/jenkins-upgrade-automation" target="_blank" rel="noopener">View GitHub Repository →</a>
+    <a class="btn" href="#architecture">Explore Architecture</a>
+  </div>
+  <div class="tags"><span class="tag">AWS EC2</span><span class="tag">Terraform</span><span class="tag">Ansible</span><span class="tag">Jenkins</span><span class="tag">Ubuntu</span><span class="tag">Linux</span><span class="tag">SSH</span></div>
+</header>
+
+<section id="repository">
+  <div class="section-number">01 / SOURCE CODE</div><h2>Repository Structure</h2>
+  <p class="lead">The repository separates infrastructure code, Ansible automation, project documentation and supporting evidence.</p>
+  <div class="tree">
+    <span class="folder">jenkins-upgrade-automation/</span><br>
+    ├── <span class="folder">terraform/</span> <span class="desc">— AWS infrastructure configuration</span><br>
+    ├── <span class="folder">ansible/</span> <span class="desc">— Inventory, playbooks and roles</span><br>
+    ├── <span class="folder">docs/</span> <span class="desc">— Architecture and operational guides</span><br>
+    │   ├── architecture.md<br>
+    │   ├── runbook.md<br>
+    │   └── patching-explained.md<br>
+    ├── <span class="folder">docs/screenshots/</span> <span class="desc">— Project screenshots</span><br>
+    ├── README.md<br>
+    └── index.html <span class="desc">— Project documentation website</span>
+  </div>
+  <p>Additional documentation: <a href="README.md">README</a> · <a href="docs/architecture.md">Architecture</a> · <a href="docs/runbook.md">Runbook</a> · <a href="docs/patching-explained.md">Patching Explained</a>.</p>
+  <p><a class="btn primary" href="https://github.com/Farsaan-tech/jenkins-upgrade-automation" target="_blank" rel="noopener">Open GitHub Repository →</a></p>
+</section>
+
+
+
+<section id="screenshots">
+  <div class="section-number">02 / PROJECT EVIDENCE</div><h2>Project Screenshots</h2>
+  <p class="lead">Screenshots showing the infrastructure configuration, Jenkins installation, backup process, upgrade execution and final version verification.</p>
+
+  <div class="screenshot">
+    <h3>01. Terraform EC2 Provisioning</h3>
+    <img loading="lazy" src="docs/screenshots/terraform-ec2-provisioning.png" alt="Terraform EC2 provisioning configuration">
+    <div class="caption">EC2 definitions and Terraform outputs.</div>
+  </div>
+
+  <div class="screenshot">
+    <h3>02. Ansible Jenkins Installation</h3>
+    <img loading="lazy" src="docs/screenshots/ansible-pinned-jenkins-install.png" alt="Ansible playbook installing pinned Jenkins version">
+    <div class="caption">Ansible playbook for installing the Jenkins baseline version.</div>
+  </div>
+
+  <div class="screenshot">
+    <h3>03. Jenkins Baseline Version Verification</h3>
+    <img loading="lazy" src="docs/screenshots/jenkins-2-249-1-verification.png" alt="Jenkins baseline version verification">
+    <div class="caption">Jenkins version view showing the configured baseline.</div>
+  </div>
+
+  <div class="screenshot">
+    <h3>04. Jenkins Backup Configuration</h3>
+    <img loading="lazy" src="docs/screenshots/jenkins-backup-plan.png" alt="Jenkins backup approach and archive task">
+    <div class="caption">Pre-upgrade Jenkins home backup approach and archive task.</div>
+  </div>
+
+  <div class="screenshot">
+    <h3>05. Ansible Upgrade Execution</h3>
+    <img loading="lazy" src="docs/screenshots/ansible-upgrade-run.png" alt="Ansible Jenkins upgrade execution">
+    <div class="caption">Jenkins upgrade playbook execution and task recap.</div>
+  </div>
+
+  <div class="screenshot">
+    <h3>06. Final Jenkins Version</h3>
+    <img loading="lazy" src="docs/screenshots/final-jenkins-version.png" alt="Final Jenkins version after upgrade">
+    <div class="caption">Jenkins web interface showing the upgraded version.</div>
+  </div>
+</section>
+
+
+
+
+
+<section id="overview">
+  <div class="section-number">03 / PROJECT</div><h2>Project Overview</h2>
+  <p class="lead">This project automates a Jenkins maintenance and upgrade scenario on AWS, using Infrastructure as Code and configuration management to make the process repeatable and controlled.</p>
+  <p>Terraform provisions two Ubuntu EC2 instances: an Ansible control node and a Jenkins target. Ansible connects to the target over SSH, installs a defined Jenkins baseline, creates a backup of Jenkins home, performs the package upgrade and checks the resulting service.</p>
+  <div class="grid">
+    <div class="card"><div class="kicker">01 / INFRASTRUCTURE</div><h3>Terraform Provisioning</h3><p>Reusable infrastructure configuration for EC2 instances, security groups, variables, outputs and generated Ansible inventory.</p></div>
+    <div class="card"><div class="kicker">02 / CONFIGURATION</div><h3>Ansible Automation</h3><p>Playbooks and roles organize Jenkins installation, backup, upgrade and verification tasks.</p></div>
+    <div class="card"><div class="kicker">03 / MAINTENANCE</div><h3>Pre-upgrade Backup</h3><p>Creates a timestamped archive of Jenkins home before package maintenance.</p></div>
+    <div class="card"><div class="kicker">04 / VALIDATION</div><h3>Post-upgrade Checks</h3><p>Checks the installed Jenkins version, systemd service state and HTTP endpoint.</p></div>
+  </div>
+</section>
+
+<section id="architecture">
+  <div class="section-number">04 / SYSTEM DESIGN</div><h2>Project Architecture</h2>
+  <p class="lead">The operator runs Terraform from a workstation. Terraform creates the AWS resources, and Ansible uses SSH to manage the Jenkins target.</p>
+  <div class="diagram">
+    <div class="node"><b>Operator Workstation</b><span>Terraform · AWS CLI · Git</span></div>
+    <div class="arrow">↓</div>
+    <div class="node"><b>Terraform</b><span>EC2 instances · Security groups · Inventory outputs</span></div>
+    <div class="arrow">↓</div>
+    <div class="split">
+      <div class="node"><b>Ansible Control Node</b><span>SSH · Inventory · Playbooks</span></div>
+      <div class="node"><b>Jenkins Target</b><span>Ubuntu · Java · Jenkins package</span></div>
+    </div>
+    <div class="arrow">Ansible connects to Jenkins target over SSH →</div>
+  </div>
+  <div class="grid three">
+    <div class="card"><h3>Control Node</h3><p>Runs Ansible playbooks and connects to the managed Jenkins instance.</p></div>
+    <div class="card"><h3>Jenkins Target</h3><p>Hosts Jenkins and receives installation, backup and upgrade tasks.</p></div>
+    <div class="card"><h3>AWS Networking</h3><p>Security groups control SSH and Jenkins web-interface access.</p></div>
+  </div>
+  <p>Detailed resource and traffic information is available in <a href="docs/architecture.md">Architecture Details</a>.</p>
+</section>
+
+<section id="workflow">
+  <div class="section-number">05 / AUTOMATION</div><h2>Automation Workflow</h2>
+  <p class="lead">The maintenance process is divided into infrastructure provisioning, configuration, backup, upgrade and verification.</p>
+  <div class="flow">
+    <div class="step"><b>STAGE 01</b><h3>Provision AWS</h3><p>Terraform creates the control and Jenkins EC2 instances and supporting network rules.</p></div>
+    <div class="step"><b>STAGE 02</b><h3>Configure SSH</h3><p>Ansible connects to the Jenkins target using the generated inventory and SSH key.</p></div>
+    <div class="step"><b>STAGE 03</b><h3>Install Baseline</h3><p>Install the specified Jenkins package version to establish the starting point.</p></div>
+    <div class="step"><b>STAGE 04</b><h3>Back Up Jenkins</h3><p>Archive <code>/var/lib/jenkins</code> before package changes.</p></div>
+    <div class="step"><b>STAGE 05</b><h3>Upgrade Jenkins</h3><p>Refresh package metadata, install the required Java runtime and upgrade Jenkins.</p></div>
+    <div class="step"><b>STAGE 06</b><h3>Verify Service</h3><p>Check package version, systemd status and the Jenkins HTTP endpoint.</p></div>
+  </div>
+  <h3>Execution Commands</h3>
+  <pre><code>terraform init
 terraform validate
 terraform plan
 terraform apply
@@ -22,20 +208,98 @@ terraform apply
 ansible-playbook -i ansible/inventory/terraform.ini ansible/playbooks/install-pinned.yml -e jenkins_version=2.249.1
 ansible-playbook -i ansible/inventory/terraform.ini ansible/playbooks/backup.yml
 ansible-playbook -i ansible/inventory/terraform.ini ansible/playbooks/upgrade.yml
-ansible-playbook -i ansible/inventory/terraform.ini ansible/playbooks/verify.yml</code></pre></section>
-<section id="setup"><h2>Setup</h2><h3>Terraform</h3><pre><code>cd terraform
+ansible-playbook -i ansible/inventory/terraform.ini ansible/playbooks/verify.yml</code></pre>
+</section>
+
+<section id="stack">
+  <div class="section-number">06 / TECHNOLOGY</div><h2>Technology Stack</h2>
+  <table><thead><tr><th>Technology</th><th>Purpose</th><th>Project Usage</th></tr></thead><tbody>
+    <tr><td><b>Amazon Web Services</b></td><td>Cloud infrastructure</td><td>EC2 instances and security groups</td></tr>
+    <tr><td><b>Terraform</b></td><td>Infrastructure as Code</td><td>Provisioning, variables, outputs and inventory generation</td></tr>
+    <tr><td><b>Ansible</b></td><td>Configuration management</td><td>Installation, backup, upgrade and verification playbooks</td></tr>
+    <tr><td><b>Jenkins</b></td><td>Automation server</td><td>Version installation and upgrade target</td></tr>
+    <tr><td><b>Ubuntu Linux</b></td><td>Operating system</td><td>Control and managed EC2 instances</td></tr>
+    <tr><td><b>SSH</b></td><td>Secure remote access</td><td>Ansible connectivity to the Jenkins target</td></tr>
+    <tr><td><b>systemd</b></td><td>Service management</td><td>Jenkins service control and status checks</td></tr>
+  </tbody></table>
+</section>
+
+<section id="setup">
+  <div class="section-number">07 / IMPLEMENTATION</div><h2>Infrastructure Setup</h2>
+  <h3>Terraform Provisioning</h3>
+  <p>Configure the Terraform variables before provisioning. The administrator CIDR and public-key path are supplied through the local variables file.</p>
+  <pre><code>cd terraform
 cp terraform.tfvars.example terraform.tfvars
-# Set admin_cidr and public_key_path before applying.
+
+# Set admin_cidr and public_key_path
+# Review the plan before creating resources
+
 terraform init
 terraform fmt -check -recursive
 terraform validate
 terraform plan
-terraform apply</code></pre><h3>Ansible</h3><p>Ensure the control node can SSH to the Jenkins target with a dedicated key. Never commit private keys or real credentials. Terraform's generated inventory path is `ansible/inventory/terraform.ini`.</p><p>Full instructions are in the <a href="docs/runbook.md">deployment and maintenance runbook</a>.</p></section>
-<section id="upgrade"><h2>Upgrade runbook</h2><h3>1. Install the pinned version</h3><pre><code>ansible-playbook -i inventory/terraform.ini playbooks/install-pinned.yml \
-  -e jenkins_version=2.249.1</code></pre><h3>2. Create a backup</h3><pre><code>ansible-playbook -i inventory/terraform.ini playbooks/backup.yml</code></pre><p>Backups are timestamped under `/var/backups/jenkins`. In production, store a copy off-host and test restoration.</p><h3>3. Upgrade and verify</h3><pre><code>ansible-playbook -i inventory/terraform.ini playbooks/upgrade.yml
-ansible-playbook -i inventory/terraform.ini playbooks/verify.yml</code></pre><p>The package repository determines the latest candidate version when the playbook runs. Review Jenkins upgrade guides, plugin compatibility and Java requirements before upgrading a production controller.</p></section>
-<section id="security"><h2>Security and operational notes</h2><ul><li>Restrict SSH and the Jenkins web interface to a trusted administrator CIDR or private network.</li><li>Do not store AWS credentials or SSH private keys in Git.</li><li>Back up Jenkins home and verify restore procedures before production upgrades.</li><li>Check plugin compatibility and follow supported Jenkins upgrade paths.</li><li>Use a supported Jenkins LTS and Java runtime for real deployments. The old pinned version is retained only to match the supplied exercise.</li><li>Destroy lab resources when finished and inspect snapshots, volumes and public IPv4 charges.</li></ul></section>
-<section id="evidence"><h2>Evidence screenshots</h2><p class="muted">Images below were extracted from the supplied PDF. They are source-document evidence, not results from a fresh run of this repository.</p><h3>Terraform provisioning</h3><img class="screenshot" src="docs/screenshots/terraform-ec2-provisioning.png" alt="Source PDF page showing Terraform EC2 configuration"><div class="caption">Source PDF page 3 — EC2 definitions and Terraform outputs.</div><h3>Install the pinned Jenkins version</h3><img class="screenshot" src="docs/screenshots/ansible-pinned-jenkins-install.png" alt="Source PDF page showing Ansible pinned Jenkins playbook"><div class="caption">Source PDF page 4 — Ansible playbook for installing Jenkins 2.249.1.</div><img class="screenshot" src="docs/screenshots/jenkins-2-249-1-verification.png" alt="Source PDF page showing pinned Jenkins version verification"><div class="caption">Source PDF page 5 — version screen showing Jenkins 2.249.1.</div><h3>Backup and upgrade</h3><img class="screenshot" src="docs/screenshots/jenkins-backup-plan.png" alt="Source PDF page showing Jenkins backup approach"><div class="caption">Source PDF page 6 — backup rationale and example archive task.</div><img class="screenshot" src="docs/screenshots/ansible-upgrade-run.png" alt="Source PDF page showing Ansible upgrade execution"><div class="caption">Source PDF page 7 — upgrade playbook and successful task recap.</div><h3>Final version check</h3><img class="screenshot" src="docs/screenshots/final-jenkins-version.png" alt="Source PDF final Jenkins version screenshot"><div class="caption">Source PDF page 8 — browser screenshot showing Jenkins 2.490.</div></section>
-<section id="resume"><h2>Resume-ready project summary</h2><p>Automated Jenkins version management on AWS using Terraform and Ansible. Provisioned separate control and target EC2 instances, configured SSH-based inventory, installed a pinned Jenkins package version, created a pre-upgrade Jenkins home backup, and automated package upgrades and post-upgrade service checks. Documented maintenance steps, security restrictions and validation evidence.</p><p class="muted">Use these claims only after you have run and verified the repository yourself.</p></section>
-<section id="validation"><h2>Validation status</h2><p>The repository and documentation are structured from the supplied PDF. This build has not been applied to AWS or run against a live Jenkins host. Before claiming a successful end-to-end deployment, validate the selected AMI, package availability, Java compatibility, security groups, backup integrity, service health and restoration process.</p></section>
-<div class="footer">Jenkins Upgrade Automation · Documentation built for GitHub Pages · MIT License</div></main></div></body></html>
+terraform apply</code></pre>
+  <h3>Ansible Connectivity</h3>
+  <p>Use the generated inventory at <code>ansible/inventory/terraform.ini</code>. The Ansible control node connects to the Jenkins target with a dedicated SSH key.</p>
+  <div class="note">Keep private keys and cloud credentials outside Git. Use a restricted administrator CIDR for inbound access.</div>
+  <p>For detailed deployment instructions, see the <a href="docs/runbook.md">Deployment and Maintenance Runbook</a>.</p>
+</section>
+
+<section id="upgrade">
+  <div class="section-number">08 / MAINTENANCE</div><h2>Jenkins Upgrade Runbook</h2>
+  <h3>1. Install the baseline version</h3>
+  <p>The maintenance workflow starts from the configured Jenkins baseline version.</p>
+  <pre><code>ansible-playbook -i inventory/terraform.ini playbooks/install-pinned.yml \
+  -e jenkins_version=2.249.1</code></pre>
+  <h3>2. Create a pre-upgrade backup</h3>
+  <pre><code>ansible-playbook -i inventory/terraform.ini playbooks/backup.yml</code></pre>
+  <p>The backup task archives <code>/var/lib/jenkins</code> under <code>/var/backups/jenkins</code> using a timestamped filename.</p>
+  <h3>3. Upgrade Jenkins</h3>
+  <pre><code>ansible-playbook -i inventory/terraform.ini playbooks/upgrade.yml</code></pre>
+  <h3>4. Verify the upgraded service</h3>
+  <pre><code>ansible-playbook -i inventory/terraform.ini playbooks/verify.yml</code></pre>
+  <p>The documented version progression is Jenkins 2.249.1 to Jenkins 2.490. Review Jenkins upgrade guidance, plugin compatibility and Java requirements when applying the process to another environment.</p>
+</section>
+
+<section id="verification">
+  <div class="section-number">09 / VALIDATION</div><h2>Verification and Results</h2>
+  <p>Post-upgrade verification checks the installed package version, Jenkins service state and HTTP endpoint.</p>
+  <div class="grid">
+    <div class="card"><div class="kicker">PACKAGE</div><h3>Version Check</h3><p>Confirm the installed Jenkins package reports the intended upgraded version.</p></div>
+    <div class="card"><div class="kicker">SERVICE</div><h3>Systemd Status</h3><p>Check that the Jenkins service is active after the upgrade.</p></div>
+    <div class="card"><div class="kicker">APPLICATION</div><h3>HTTP Endpoint</h3><p>Check that the Jenkins web interface responds after maintenance.</p></div>
+    <div class="card"><div class="kicker">RECOVERY</div><h3>Backup Availability</h3><p>Confirm the pre-upgrade archive is present and available for recovery procedures.</p></div>
+  </div>
+  <div class="note">The accompanying project screenshots show the provisioning, installation, backup, upgrade execution and final Jenkins version views.</div>
+</section>
+
+<section id="security">
+  <div class="section-number">10 / SECURITY</div><h2>Security and Operational Practices</h2>
+  <ul>
+    <li>Restrict SSH and Jenkins web access to a trusted administrator CIDR or private network.</li>
+    <li>Do not commit AWS credentials, SSH private keys or real passwords to Git.</li>
+    <li>Back up Jenkins home before maintenance and verify the recovery procedure.</li>
+    <li>Review plugin compatibility and supported Jenkins upgrade paths.</li>
+    <li>Use supported Jenkins LTS and Java versions for production environments.</li>
+    <li>Destroy temporary lab resources when they are no longer required and review associated storage and public IP charges.</li>
+  </ul>
+</section>
+
+<section id="troubleshooting">
+  <div class="section-number">11 / OPERATIONS</div><h2>Troubleshooting</h2>
+  <div class="card"><h3>Terraform provisioning fails</h3><p>Review AWS credentials, region, AMI availability, key-pair configuration, CIDR values and Terraform plan output.</p></div>
+  <div class="card"><h3>Ansible SSH connection fails</h3><p>Check the generated inventory, private-key permissions, security-group rules and target instance connectivity.</p></div>
+  <div class="card"><h3>Jenkins package installation fails</h3><p>Review APT repository configuration, package availability, Java compatibility and package-manager output.</p></div>
+  <div class="card"><h3>Jenkins does not start after upgrade</h3><p>Inspect systemd status, Jenkins logs, Java runtime compatibility, plugin compatibility and available disk space.</p></div>
+  <div class="card"><h3>Jenkins interface is unavailable</h3><p>Check service status, port configuration, security-group rules and network reachability.</p></div>
+</section>
+
+<footer class="footer">
+  <strong>Jenkins Upgrade Automation</strong><br>
+  AWS · Terraform · Ansible · Jenkins<br><br>
+  <a href="https://github.com/Farsaan-tech/jenkins-upgrade-automation" target="_blank" rel="noopener">View source code on GitHub →</a>
+</footer>
+</main>
+</div>
+</body>
+</html>
